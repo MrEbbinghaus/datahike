@@ -1,5 +1,7 @@
-(ns sandbox
-  (:require [datahike.api :as d]))
+(ns user
+  (:require [datahike.api :as d]
+            [datahike.db :as dd]
+            [datahike.schema :as ds]))
 
 (comment
 
@@ -15,16 +17,24 @@
                 :db/cardinality :db.cardinality/one
                 :db/valueType   :db.type/long}])
 
-  (def cfg {:store  {:backend :mem :id "sandbox"}
-            :keep-history? true
+  (def cfg {:store              {:backend :mem
+                                 :id "sandbox"}
+            :keep-history?      true
             :schema-flexibility :write
-            :initial-tx schema})
+            :index :datahike.index/hitchhiker-tree
+            :initial-tx         schema})
 
   (d/delete-database cfg)
 
   (d/create-database cfg)
 
   (def conn (d/connect cfg))
+
+  (d/schema @conn)
+
+  (d/reverse-schema @conn)
+
+  (:store @conn)
 
   (d/transact conn [{:name "Alice"
                      :age  25}
@@ -38,4 +48,6 @@
          :in $ ?a
          :where [?e :name ?v ?t] [?e :age ?a]]
        @conn
-       35))
+       35)
+
+  )
