@@ -803,7 +803,8 @@
   ([schema] (empty-db schema nil))
   ([schema config]
    {:pre [(or (nil? schema) (map? schema) (coll? schema))]}
-   (let [{:keys [keep-history? index schema-flexibility] :as config} (merge (dc/storeless-config) config)
+   (let [cleaned-config (dissoc config :initial-tx)
+         {:keys [keep-history? index schema-flexibility] :as config} (merge (dc/storeless-config) cleaned-config)
          on-read? (= :read schema-flexibility)
          schema (to-old-schema schema)
          _ (if on-read?
